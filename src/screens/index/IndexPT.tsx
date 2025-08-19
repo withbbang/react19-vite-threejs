@@ -1,6 +1,7 @@
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import Box from 'components/Box';
+import Dog from 'components/Animals/Dog';
 import styles from './Index.module.scss';
 
 function IndexPT({}: IndexPTProps): React.JSX.Element {
@@ -19,6 +20,7 @@ function IndexPT({}: IndexPTProps): React.JSX.Element {
         <pointLight position={[-10, -10, -10]} decay={0} intensity={Math.PI} />
         <Box position={[-1.2, 0, 0]} />
         <Box position={[1.2, 0, 0]} />
+        <Dog />
       </Canvas>
     </div>
   );
