@@ -17,11 +17,14 @@ REACT19 VATE THREEJS
 ├─ 📁public
 │  ├─ 📄mockServiceWorker.js
 ├─ 📁src
+│  ├─ 📁__tests__
+│  ├─ 📁api
 │  ├─ 📁components
 │  ├─ 📁middlewares
-│  ├─ 📁modules
+│  ├─ 📁mocks
 │  ├─ 📁screens
-│  ├─ 📁scss
+│  ├─ 📁styles
+│  ├─ 📁utils
 │  ├─ 📄App.tsx
 │  ├─ 📄global.d.ts
 │  └─ 📄index.tsx
@@ -40,6 +43,12 @@ REACT19 VATE THREEJS
 
 ### 파일 설명
 
+- 📁__tests__: 단위테스트 모듈 파일
+- 📁api: api 요청 모음
+- 📁middlewares: redux toolkit 미들웨어 모음
+- 📁mocks: mock 테스트 모음
+- 📁styles: css 중앙 스타일링 모음
+- 📁utils: 유틸 모음
 - 📄.eslintrc.json: eslint 설정 파일
 - 📄.gitmessage.txt: git commit template 파일
 - 📄.prettierrc: 프리티어 설정 파일
