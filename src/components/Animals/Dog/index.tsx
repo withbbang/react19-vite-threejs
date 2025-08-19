@@ -3,9 +3,9 @@ import { useFrame } from '@react-three/fiber';
 
 function Dog(props: any) {
   const groupRef = useRef<any>(null);
-  useFrame((state, delta) => (groupRef.current.rotation.x += delta));
-  useFrame((state, delta) => (groupRef.current.rotation.y += delta));
-  useFrame((state, delta) => (groupRef.current.rotation.z += delta));
+  //   useFrame((state, delta) => (groupRef.current.rotation.x += delta));
+  //   useFrame((state, delta) => (groupRef.current.rotation.y += delta));
+  //   useFrame((state, delta) => (groupRef.current.rotation.z += delta));
 
   return (
     <group ref={groupRef}>
