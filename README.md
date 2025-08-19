@@ -1,6 +1,8 @@
 # REACT19 VATE THREEJS
 
 [Homepage](http://macho-files.o-r.kr)
+[Fiber Docs](https://r3f.docs.pmnd.rs/getting-started/introduction)
+[Drei Docs](https://drei.docs.pmnd.rs/getting-started/introduction)
 
 ### 프로젝트 목적
 
@@ -43,7 +45,7 @@ REACT19 VATE THREEJS
 
 ### 파일 설명
 
-- 📁__tests__: 단위테스트 모듈 파일
+- 📁**tests**: 단위테스트 모듈 파일
 - 📁api: api 요청 모음
 - 📁middlewares: redux toolkit 미들웨어 모음
 - 📁mocks: mock 테스트 모음
