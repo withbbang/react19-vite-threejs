@@ -2,8 +2,13 @@ import React, { useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 
 function Dog(props: any) {
+  const groupRef = useRef<any>(null);
+  useFrame((state, delta) => (groupRef.current.rotation.x += delta));
+  useFrame((state, delta) => (groupRef.current.rotation.y += delta));
+  useFrame((state, delta) => (groupRef.current.rotation.z += delta));
+
   return (
-    <group>
+    <group ref={groupRef}>
       {/* 몸통 */}
       <mesh position={[0, -0.5, 0]}>
         <boxGeometry args={[1.5, 1, 1]} />
