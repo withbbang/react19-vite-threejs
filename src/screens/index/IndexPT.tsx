@@ -2,7 +2,7 @@ import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import Box from 'components/Box';
-import Dog from 'components/Animals/Dog';
+import Dog from 'components/Dog';
 import styles from './Index.module.scss';
 
 function IndexPT({}: IndexPTProps): React.JSX.Element {
