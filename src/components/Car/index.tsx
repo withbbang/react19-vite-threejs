@@ -28,8 +28,11 @@ function Car(props: any) {
     const dt = Math.min(dtRaw, DT_CAP); // dt 캡: 급격한 프레임 지연에도 물리 안정성 유지
 
     // 현재 차체 회전(Quaternion) → "전방 벡터" 계산 (Z-)
-    const { x, y, z, w } = body.rotation(); // Rapier 쿼터니언
-    const q = new THREE.Quaternion(x, y, z, w);
+    const { x, y, z, w } = body.rotation(); // 물체의 방향 정보 추출
+    const q = new THREE.Quaternion(x, y, z, w); // 물체의 회전 정보 추출
+    // Vector3(0, 0, -1): 물체를 기본 앞방향 설정 (-z방향 === 사용자로부터 멀어지는 방향)
+    // applyQuaternion(q): 물체의 회전 정보를 통해 실제 앞방향 추출
+    // normalize(): 물제의 앞방향 값을 1로 정규화
     const fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(q).normalize();
 
     // 입력 해석: 전/후진은 +1/-1, 무입력은 0
@@ -38,8 +41,8 @@ function Car(props: any) {
     const steerInput = (left ? 1 : 0) - (right ? 1 : 0);
 
     // 현재 속도의 전방향 성분(스칼라): 전진 중(+) / 후진 중(-)
-    const v = body.linvel();
-    const speedAlongForward = v.x * fwd.x + v.z * fwd.z;
+    const v = body.linvel(); // 물체의 각 방향의 속도 정보 추출
+    const speedAlongForward = v.x * fwd.x + v.z * fwd.z; // 물체의 앞/뒤 방향 속도
 
     // 목표 속도: 전/후진 입력이 있으면 그 방향으로, 없으면 0(서서히 감속)
     //    - 이 방식은 "목표 속도 추종"이라 과도한 가속/감속 없이 자연스럽게 움직임
