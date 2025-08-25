@@ -1,15 +1,14 @@
 import React, { useRef, useState } from 'react';
 import * as THREE from 'three';
 import * as RAPIER from '@dimforge/rapier3d-compat';
-import { useFrame, useThree } from '@react-three/fiber';
+import { useFrame } from '@react-three/fiber';
 import { CuboidCollider, RigidBody, useRapier } from '@react-three/rapier';
 import { useKeyboardControls } from '@react-three/drei';
 
-function Car(props: any) {
-  const ref = useRef<any>(null); // 차체
+function Car({ carRef }: CarProps) {
   const rapier = useRapier(); // ✅ 추가: 레이캐스트 쓰려면 rapier world 접근 필요
   const prevSpacePressed = useRef(false);
-  const { camera } = useThree(); // 카메라 객체
+  // const { camera } = useThree(); // 카메라 객체
   const [onGround, setOnGround] = useState(false);
   const [jumpCooldown, setJumpCooldown] = useState(0);
 
@@ -31,7 +30,7 @@ function Car(props: any) {
   const JUMP = 10; // 점프 세기
 
   useFrame((_, dtRaw) => {
-    const body = ref.current;
+    const body = carRef.current;
     if (!body) return;
 
     const dt = Math.min(dtRaw, DT_CAP); // dt 캡: 급격한 프레임 지연에도 물리 안정성 유지
@@ -129,13 +128,13 @@ function Car(props: any) {
     body.setAngularDamping(ANG_DAMP);
 
     // 자동차 카메라 따라가기
-    camera.position.lerp(new THREE.Vector3(pos.x, pos.y + 3, pos.z + 6), 0.1);
-    camera.lookAt(pos.x, pos.y, pos.z);
+    // camera.position.lerp(new THREE.Vector3(pos.x, pos.y + 3, pos.z + 6), 0.1);
+    // camera.lookAt(pos.x, pos.y, pos.z);
   });
 
   return (
     <RigidBody
-      ref={ref}
+      ref={carRef}
       // 시작 높이를 약간 띄워 초기 충돌 겹침 방지
       position={[0, 1.5, 0]}
       // 롤/피치 회전 비활성화(전복 방지), 요(좌/우 회전)만 허용
@@ -157,6 +156,10 @@ function Car(props: any) {
       <CuboidCollider args={[0.8, 0.3, 1.5]} />
     </RigidBody>
   );
+}
+
+interface CarProps {
+  carRef: React.RefObject<any>;
 }
 
 export default Car;

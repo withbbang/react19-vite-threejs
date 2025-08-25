@@ -1,16 +1,13 @@
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/rapier';
-import {
-  OrbitControls,
-  KeyboardControls,
-  ContactShadows,
-} from '@react-three/drei';
+import { KeyboardControls, ContactShadows } from '@react-three/drei';
 import Car from 'components/Car';
 import Walls from 'components/Walls';
+import CameraController from 'components/CameraController';
 import styles from './Game.module.scss';
 
-function GamePT({}: GamePTProps): React.JSX.Element {
+function GamePT({ carRef }: GamePTProps): React.JSX.Element {
   return (
     <div className={styles.wrap}>
       <KeyboardControls
@@ -36,7 +33,7 @@ function GamePT({}: GamePTProps): React.JSX.Element {
           <ambientLight intensity={0.6} />
           <directionalLight position={[10, 10, 5]} intensity={1} />
           <Physics gravity={[0, -9.81, 0]}>
-            <Car />
+            <Car carRef={carRef} />
             <Walls />
             <ContactShadows
               position={[0, 0, 0]} // 땅 위치
@@ -46,14 +43,15 @@ function GamePT({}: GamePTProps): React.JSX.Element {
               far={10} // 그림자가 보이는 높이
             />
           </Physics>
-          {/* 필요하면 마우스로 둘러보기만 사용 (키보드 팬은 사용 안 함) */}
-          <OrbitControls enablePan={true} />
+          <CameraController carRef={carRef} />
         </Canvas>
       </KeyboardControls>
     </div>
   );
 }
 
-interface GamePTProps {}
+interface GamePTProps {
+  carRef: React.RefObject<any>;
+}
 
 export default GamePT;
