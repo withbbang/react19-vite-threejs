@@ -1,11 +1,17 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import * as THREE from 'three';
-import { useFrame } from '@react-three/fiber';
-import { CuboidCollider, RigidBody } from '@react-three/rapier';
+import * as RAPIER from '@dimforge/rapier3d-compat';
+import { useFrame, useThree } from '@react-three/fiber';
+import { CuboidCollider, RigidBody, useRapier } from '@react-three/rapier';
 import { useKeyboardControls } from '@react-three/drei';
 
 function Car(props: any) {
-  const ref = useRef<any>(null);
+  const ref = useRef<any>(null); // 차체
+  const rapier = useRapier(); // ✅ 추가: 레이캐스트 쓰려면 rapier world 접근 필요
+  const prevSpacePressed = useRef(false);
+  const { camera } = useThree(); // 카메라 객체
+  const [onGround, setOnGround] = useState(false);
+  const [jumpCooldown, setJumpCooldown] = useState(0);
 
   // 키 상태 셀렉터: 렌더마다 최신 키 입력을 Hooks로 구독
   const forward = useKeyboardControls((s) => s.forward);
@@ -17,15 +23,23 @@ function Car(props: any) {
   // 물리/조작 파라미터 (필요 시 조절)
   const MAX_SPEED = 14; // 최대 목표 속도 (m/s 가정, 전/후진 동일)
   const ACCEL = 28; // 가속도 등가 임펄스 크기(질량 보정 전)
-  const STEER = 5; // 조향 토크(요 회전 강도)
+  const STEER = 10; // 조향 토크(요 회전 강도)
   const LIN_DAMP = 0.6; // 선형 감쇠 (미끄럼 줄이기)
   const ANG_DAMP = 2.0; // 각 감쇠 (회전 잔진동 줄이기)
   const DT_CAP = 1 / 30; // 저프레임 스파이크 캡(물리 안정화)
+  const JUMP_COOLDOWN = 0.2; // 연속 점프 불가하게 쿨다운 시간 설정
+  const JUMP = 10; // 점프 세기
 
   useFrame((_, dtRaw) => {
     const body = ref.current;
     if (!body) return;
+
     const dt = Math.min(dtRaw, DT_CAP); // dt 캡: 급격한 프레임 지연에도 물리 안정성 유지
+
+    // 쿨다운 타이머 감소
+    if (jumpCooldown > 0) {
+      setJumpCooldown((t) => Math.max(0, t - dt));
+    }
 
     // 현재 차체 회전(Quaternion) → "전방 벡터" 계산 (Z-)
     const { x, y, z, w } = body.rotation(); // 물체의 방향 정보 추출
@@ -87,20 +101,36 @@ function Car(props: any) {
       body.applyTorqueImpulse({ x: 0, y: yaw, z: 0 }, true);
     }
 
-    // 점프 (스페이스바)
-    if (jump) {
-      // 현재 y 위치가 바닥과 가까울 때만 점프 (공중 점프 방지)
-      const pos = body.translation();
+    const pos = body.translation();
+    const ray = rapier.world.castRay(
+      new RAPIER.Ray({ x: pos.x, y: pos.y, z: pos.z }, { x: 0, y: -1, z: 0 }),
+      1.1, // 레이 길이: 차 높이보다 약간 긴 값
+      true,
+    );
+    setOnGround(ray !== null);
 
-      // 차체 높이(1.5) + 약간의 여유
-      if (pos.y <= 1.55) {
-        body.applyImpulse({ x: 0, y: 10, z: 0 }, true);
-      }
+    // 점프 (스페이스바)
+    if (
+      jump &&
+      !prevSpacePressed.current &&
+      onGround &&
+      v.y < 0.1 &&
+      jumpCooldown <= 0
+    ) {
+      body.applyImpulse({ x: 0, y: JUMP, z: 0 }, true);
+      setJumpCooldown(JUMP_COOLDOWN); // 점프 후 쿨다운 시작
+      body.wakeUp();
     }
 
+    // 직전 프레임 키 상태 갱신
+    prevSpacePressed.current = jump;
     // 감쇠: 마찰/공기저항 느낌. 값이 높을수록 급격히 감속/감회전
     body.setLinearDamping(LIN_DAMP);
     body.setAngularDamping(ANG_DAMP);
+
+    // 자동차 카메라 따라가기
+    camera.position.lerp(new THREE.Vector3(pos.x, pos.y + 3, pos.z + 6), 0.1);
+    camera.lookAt(pos.x, pos.y, pos.z);
   });
 
   return (

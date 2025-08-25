@@ -1,7 +1,11 @@
 import React from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Physics } from '@react-three/rapier';
-import { OrbitControls, KeyboardControls } from '@react-three/drei';
+import {
+  OrbitControls,
+  KeyboardControls,
+  ContactShadows,
+} from '@react-three/drei';
 import Car from 'components/Car';
 import Walls from 'components/Walls';
 import styles from './Game.module.scss';
@@ -34,6 +38,13 @@ function GamePT({}: GamePTProps): React.JSX.Element {
           <Physics gravity={[0, -9.81, 0]}>
             <Car />
             <Walls />
+            <ContactShadows
+              position={[0, 0, 0]} // 땅 위치
+              opacity={0.6} // 그림자 진하기
+              scale={20} // 그림자 크기
+              blur={1.5} // 번짐 정도
+              far={10} // 그림자가 보이는 높이
+            />
           </Physics>
           {/* 필요하면 마우스로 둘러보기만 사용 (키보드 팬은 사용 안 함) */}
           <OrbitControls enablePan={true} />

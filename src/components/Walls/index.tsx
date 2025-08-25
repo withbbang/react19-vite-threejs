@@ -6,7 +6,7 @@ function Walls(props: any) {
     <>
       {/* 두께 있는 바닥 */}
       <RigidBody type="fixed" friction={1} restitution={0}>
-        <mesh position={[0, -0.5, 0]}>
+        <mesh receiveShadow position={[0, -0.5, 0]}>
           <boxGeometry args={[60, 1, 60]} />
           <meshStandardMaterial color="#d9d9d9" />
         </mesh>
